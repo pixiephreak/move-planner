@@ -22,14 +22,15 @@ function loadData() {
     console.log(address);
     var streetviewUrl = 'http://maps.googleapis.com/maps/api/streetview?size=600x300&location='+ address + '';
     console.log(streetviewUrl);
+
     //integrate nyt api
-    var nytimesUrl = 'http://api.nytimes.com/svc/search/v2/articlesearch.json?q=' + cityStr + '&sort=newest&api-key=f723564a5d5f430fb03f3e4f289d7b13'
+    var nytimesUrl = 'http://api.nytimes.com/svc/search/v2/articlesearch.json?q=' + cityStr + '&sort=newest&api-key=f723564a5d5f430fb03f3e4f289d7b13';
 	console.log(nytimesUrl);
-	/* $.getJSON( "nytimesUrl", function( data ) {
-		console.log(data);
-  		$nytHeaderElem.text('New York Times Articles About' + cityStr );
+	$.getJSON( nytimesUrl, function( data ) {
+		// console.log(data);
+  		$nytHeaderElem.text(`New York Times Articles about ${cityStr[0].toUpperCase()}${cityStr.slice(1)}`);
   		//why global var (articles)?
-  		articles = data.response.docs;
+  		var articles = data.response.docs;
   		var l =  articles.length;
   		for (var i=0; i< l; i++){
   			var article = articles[i];
@@ -37,9 +38,9 @@ function loadData() {
   			+'<p>' + article.snippet +'</p>'+'</li>');
   			};
   		})
-  		*/
+
 	//WORKS:
-	$.ajax({
+	/*$.ajax({
   		url: nytimesUrl,
   		method: 'GET',
 		}).done(function(result) {
@@ -58,6 +59,35 @@ function loadData() {
 
 			}).fail(function(err) {
   				throw err;
+				});
+*/
+
+	//integrate wikipedia api
+	var wikiUrl = 'https://en.wikipedia.org/w/api.php?action=opensearch&format=json&search='+ cityStr;
+
+	$.ajax({
+  		url: wikiUrl,
+  		method: 'GET',
+  		dataType: 'jsonp',
+		}).success(function(result) {
+			console.log(result);
+			// //return an arrays of objects
+  			var titles = result[1];
+  			var tl = titles.length;
+  			var text = result[2];
+  			var links = result[3];
+
+  			//retrieve data for each article
+  			for(let i=0; i<tl; i++){
+  				$wikiElem.append(`<li class="article"> <a href="${links[i]}"> ${titles[i]}</a> <p>${text[i]}</p> <li>`);
+  				}
+
+  	// 			$nytElem.append('<li class="article">'+'<a href="'+article.web_url+'">'+article.headline.main+'</a>'
+  	// 		+'<p>' + article.snippet +'</p>'+'</li>');
+
+
+			// }).fail(function(err) {
+  	// 			throw err;
 				});
 
 
