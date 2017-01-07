@@ -24,8 +24,9 @@ function loadData() {
     console.log(streetviewUrl);
     //integrate nyt api
     var nytimesUrl = 'http://api.nytimes.com/svc/search/v2/articlesearch.json?q=' + cityStr + '&sort=newest&api-key=f723564a5d5f430fb03f3e4f289d7b13'
-	$.getJSON( "ajax/nytimesUrl", function( data ) {
-
+	console.log(nytimesUrl);
+	/* $.getJSON( "nytimesUrl", function( data ) {
+		console.log(data);
   		$nytHeaderElem.text('New York Times Articles About' + cityStr );
   		//why global var (articles)?
   		articles = data.response.docs;
@@ -36,17 +37,30 @@ function loadData() {
   			+'<p>' + article.snippet +'</p>'+'</li>');
   			};
   		})
-
-	/*$.ajax({
+  		*/
+	//WORKS:
+	$.ajax({
   		url: nytimesUrl,
   		method: 'GET',
 		}).done(function(result) {
-			//returns an array of objects (articles)
-  			console.log(result);
+			//append header
+			$nytHeaderElem.text(`New York Times Articles about ${cityStr[0].toUpperCase()}${cityStr.slice(1)}`);
+			//return an array of objects (articles)
+  			var articles = result.response.docs;
+  			//retrieve data for each article
+  			var l = articles.length;
+  			for(i=0; i<l; i++){
+  				var article = articles[i];
+  				console.log(article);
+  				$nytElem.append('<li class="article">'+'<a href="'+article.web_url+'">'+article.headline.main+'</a>'
+  			+'<p>' + article.snippet +'</p>'+'</li>');
+  			}
+
 			}).fail(function(err) {
   				throw err;
 				});
-	*/
+
+
 
     $('#greeting').text(`So, you want to live at ${streetStr}, ${cityStr[0].toUpperCase()}${cityStr.slice(1)}?`);
     $('body').append('<img class="bgimg" src="' +streetviewUrl + '">');
